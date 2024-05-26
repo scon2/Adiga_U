@@ -1,27 +1,64 @@
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+from typing import List, Optional
+import json
 
-# Spot 클래스 정의
+app = FastAPI()
+
 class Spot(BaseModel):
-    id: int
-    name: str = None
-    location: str = None
-    time: str = None
-    tags: str = None
-    description: str = None
-    good: int = None
+    id: Optional[int] = Field(default=None)
+    name: Optional[str] = None
+    location: Optional[str] = None
+    time: Optional[str] = None
+    tags: Optional[list[str]] = None
+    description: Optional[str] = None
+    good: Optional[int] = Field(default=None)
+    isVideo: Optional[bool] = None
+    pictureURL: Optional[str] = None
 
-# JSON 파일에서 읽어온 데이터 (예시)
-item = {
-    "id": 1,
-    "name": "Spot 1",
-    "location": "Seoul",
-    "time": "12:00",
-    "tags": "nature",
-    "description": "A beautiful park",
-    "good": 100
-}
+db = []
 
-# **item을 사용하여 Spot 인스턴스 생성
-spot = Spot(**item)
+def load_data_from_json(file_path: str):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+        for i, item in enumerate(data, start=1):
+            default_values = {
+                "id": i,
+                "name": None,
+                "location": None,
+                "time": None,
+                "tags": None,
+                "description": None,
+                "good": None,
+                "isVideo": None,
+                "pictureURL": None
+            }
+            # Replace null values and add default id
+            item = {key: item.get(key, default) if item.get(key) is not None else default for key, default in default_values.items()}
+            spot = Spot(**item)
+            db.append(spot)
 
-print(spot)
+@app.get("/")
+async def message():
+    return '어디가유 데이터 서버입니당 확인용2'
+
+@app.post("/load-data/")
+def load_data(file_path: str):
+    try:
+        load_data_from_json(file_path)
+        return {"message": "Data loaded successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/spots/")
+def create_spot(spot: Spot):
+    for stored_spot in db:
+        if stored_spot.id == spot.id:
+            raise HTTPException(status_code=400, detail="Spot ID already exists")
+
+    db.append(spot)
+    return spot
+
+@app.get("/spots/")
+def read_spots():
+    return db
