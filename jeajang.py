@@ -12,9 +12,11 @@ class Spot(BaseModel):
     time: Optional[str] = None
     tags: Optional[list[str]] = None
     description: Optional[str] = None
-    good: Optional[int] = Field(default=None)
-    isVideo: Optional[bool] = None
-    pictureURL: Optional[str] = None
+    # good: Optional[int] = Field(default=None)
+    # isVideo: Optional[bool] = None
+    # pictureURL: Optional[str] = None
+
+
 
 db = []
 
@@ -29,18 +31,16 @@ def load_data_from_json(file_path: str):
                 "time": None,
                 "tags": None,
                 "description": None,
-                "good": None,
-                "isVideo": None,
-                "pictureURL": None
+                # "good": None,
+                # "isVideo": None
             }
-            # Replace null values and add default id
-            item = {key: item.get(key, default) if item.get(key) is not None else default for key, default in default_values.items()}
+            item = {key: item.get(key, default) for key, default in default_values.items()}
             spot = Spot(**item)
             db.append(spot)
 
 @app.get("/")
 async def message():
-    return '어디가유 데이터 서버입니당 확인용3'
+    return '어디가유 데이터 서버입니당 확인용1'
 
 @app.post("/load-data/")
 def load_data(file_path: str):
@@ -62,3 +62,10 @@ def create_spot(spot: Spot):
 @app.get("/spots/")
 def read_spots():
     return db
+
+# @app.get("/spots/{spot_id}")
+# def read_spot(spot_id: int):
+#     for spot in db:
+#         if spot.id == spot_id:
+#             return spot
+#     raise HTTPException(status_code=404, detail="Spot not found")
