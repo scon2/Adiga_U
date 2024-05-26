@@ -15,9 +15,9 @@ class Spot(BaseModel):
 
 db = []
 
-@app.get("/")
+@app.get("/main")
 async def message():
-    return '어디가유 데이터 서버입니당'
+    return '어디가유 데이터 서버입니당(spot)'
 
 @app.post("/spots/")
 async def create_spot(spot: Spot):
