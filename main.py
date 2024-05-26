@@ -11,16 +11,16 @@ class Spot(BaseModel):
     time: str = None
     tags: str = None
     description: str = None
-    good: int = None
-
 
 db = []
+
+
 
 @app.get("/")
 async def message():
     return '어디가유 데이터 서버입니당 spots'
 
-@app.post("/spots/")
+@app.post("/spots")
 async def create_spot(spot: Spot):
     db.append(spot)
     return spot
