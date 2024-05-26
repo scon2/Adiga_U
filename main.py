@@ -4,10 +4,13 @@ from typing import List
 
 app = FastAPI()
 
-class Location(BaseModel):
-    name: str
-    tag: str
-    good: int
+class Spot(BaseModel):
+    id: int
+    name: str = None
+    location: str = None
+    time: str = None
+    tag: str = None
+    good: int = None
 
 
 db = []
@@ -16,18 +19,17 @@ db = []
 async def message():
     return '어디가유 데이터 서버입니당'
 
-@app.post("/locations/")
-async def create_location(location: Location):
-    db.append(location)
-    return location
+@app.post("/spots/")
+async def create_spot(spot: Spot):
+    db.append(spot)
+    return spot
 
-@app.get("/locations/")
-async def read_location():
+@app.get("/spots/")
+async def read_spot():
     return db
 
-@app.get("/locations/{location_name}")
-async def read_location(location_name: str):
-    for location in db:
-        if location.name == location_name:
-            return location
-
+@app.get("/spots/{spot_id}")
+async def read_splot(spot_id: int):
+    for spot in db:
+        if spot.id == spot_id:
+            return spot
