@@ -12,9 +12,10 @@ class Spot(BaseModel):
     time: Optional[str] = None
     tags: Optional[list[str]] = None
     description: Optional[str] = None
-    good: Optional[int] = Field(default=None)
+    category: Optional[list[str]] = None
+    like: Optional[float] = Field(default=None)
     isVideo: Optional[bool] = None
-    pictureURL: Optional[str] = None
+    img_url: Optional[str] = None
 
 db = []
 
@@ -33,7 +34,7 @@ def load_data_from_json(file_path: str):
                 "isVideo": None,
                 "pictureURL": None
             }
-            # Replace null values and add default id
+
             item = {key: item.get(key, default) if item.get(key) is not None else default for key, default in default_values.items()}
             spot = Spot(**item)
             db.append(spot)
@@ -62,3 +63,11 @@ def create_spot(spot: Spot):
 @app.get("/spots/")
 def read_spots():
     return db
+
+@app.get("/spots/{spot_id}")
+def read_spot(spot_id: int):
+    for spot in db:
+        if spot_id == spot.id:
+            result = spot
+    return result
+
